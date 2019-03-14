@@ -14,6 +14,7 @@ from pyspark.ml.classification import GBTClassificationModel
 from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.classification import LogisticRegressionModel
 from pyspark.ml.classification import LinearSVC
+from pyspark.ml.classification import LinearSVCModel
 
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.ml.evaluation import BinaryClassificationEvaluator
@@ -38,6 +39,11 @@ def linearSVC(df, feature_list=['BFSIZE', 'HDRSIZE', 'NODETYPE'], maxIter=100, r
     # sc = SparkContext.getOrCreate()
     # sqlContext = SQLContext(sc)
     # sqlContext.setLogLevel('INFO')
+    feature_list.sort()
+    feature_name = '_'.join(feature_list)
+    param_name = '_'.join([str(regParam), str(threshold), str(maxIter)])
+    model_path_name = model_dir + 'LinearSVC/' + feature_name + '_' + param_name
+    model = None
 
     vector_assembler = VectorAssembler(inputCols=feature_list, outputCol="features")
     df_temp = vector_assembler.transform(df)
@@ -46,8 +52,13 @@ def linearSVC(df, feature_list=['BFSIZE', 'HDRSIZE', 'NODETYPE'], maxIter=100, r
 
     trainingData, testData = df.randomSplit([0.7, 0.3])
 
-    lsvc = LinearSVC(maxIter=maxIter, regParam=regParam, threshold=threshold)
-    model = lsvc.fit(trainingData)
+    if os.path.isdir(model_path_name) and not overwrite_model:
+        print('Loading model from ' + model_path_name)
+        model = LinearSVCModel.load(model_path_name)
+
+    else:
+        lsvc = LinearSVC(maxIter=maxIter, regParam=regParam, threshold=threshold)
+        model = lsvc.fit(trainingData)
 
     print('Making predictions on validation data')
     predictions = model.transform(testData)
@@ -89,7 +100,7 @@ def linearSVC(df, feature_list=['BFSIZE', 'HDRSIZE', 'NODETYPE'], maxIter=100, r
     print(' Cloud Misses %{}'.format((cloud_misses/cloud_pred) * 100))
     print(' Disk Misses %{}'.format((disk_misses/disk_pred) * 100))
 
-    if auc > 0.80:
+    if auc > 0.70:
         if os.path.isdir(model_path_name):
             if overwrite_model:
                 print('Saving model to ' + model_path_name)
@@ -114,7 +125,7 @@ def linearSVC(df, feature_list=['BFSIZE', 'HDRSIZE', 'NODETYPE'], maxIter=100, r
                 'features' : feature_list
             }
 
-    with open('/tmp/temp3.yml', 'w') as outfile:
+    with open('tmp/temp3.yml', 'w') as outfile:
         yaml.dump(metrics, outfile)
 
     return metrics, model
@@ -235,7 +246,7 @@ def multinomialRegression(df, feature_list=['BFSIZE', 'HDRSIZE', 'NODETYPE'], ma
                 'features' : feature_list
             }
 
-    with open('/tmp/temp2.yml', 'w') as outfile:
+    with open('tmp/temp2.yml', 'w') as outfile:
         yaml.dump(metrics, outfile)
 
     return metrics, model
@@ -357,7 +368,7 @@ def randomForest(df, feature_list=['BFSIZE', 'HDRSIZE', 'NODETYPE'], maxDepth = 
                 'features' : feature_list
             }
 
-    with open('/tmp/temp.yml', 'w') as outfile:
+    with open('tmp/temp.yml', 'w') as outfile:
         yaml.dump(metrics, outfile)
 
     return metrics, model
@@ -456,7 +467,7 @@ def gradientBoosting(df, feature_list=['BFSIZE', 'HDRSIZE', 'NODETYPE'], maxIter
                 'features' : feature_list
             }
 
-    with open('/tmp/temp1.yml', 'w') as outfile:
+    with open('tmp/temp1.yml', 'w') as outfile:
         yaml.dump(metrics, outfile)
 
     return metrics, model
