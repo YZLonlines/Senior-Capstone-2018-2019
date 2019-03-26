@@ -27,8 +27,8 @@ import io
 import yaml
 
 # change to be reflective of your environment
-data_dir = '/home/cole/Workspace/School/Capstone/data/first_data_set/TestData/'
-model_dir = '/home/cole/Workspace/School/Capstone/data/models/'
+data_dir = '/app/TestData'
+model_dir = '/app/TestData/models/'
 
 # change to match your environment
 output_dir = data_dir + "/merge_data"

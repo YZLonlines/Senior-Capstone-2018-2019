@@ -10,7 +10,7 @@ from pyspark.sql.types import LongType
 import os
 
 # change to be reflective of your environment
-data_dir = '/home/cole/Workspace/School/Capstone/data/first_data_set/TestData/'
+data_dir = '/app/TestData'
 
 # change to match your environment
 output_dir = data_dir + "/merge_data"
