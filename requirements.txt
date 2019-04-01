@@ -1,6 +1,0 @@
-pyspark
-click
-tensorflow
-numpy
-matplotlib
-pyyaml
