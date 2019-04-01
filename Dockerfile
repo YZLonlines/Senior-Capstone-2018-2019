@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN pip install --trusted-host pypi.python.org -r environment.yml
 
 # RUN cp -R /usr/local/lib/python3.7/site-packages/PyQt5/Qt/plugins/platforms /app
 
