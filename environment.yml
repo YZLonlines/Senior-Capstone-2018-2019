@@ -8,6 +8,8 @@ dependencies:
   - tensorflow
   - fastparquet
   - pyarrow
+  - pyyaml
+  - click
   - pip:
     - matplotlib
     - dask
